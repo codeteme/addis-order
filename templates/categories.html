@@ -1,6 +1,24 @@
-<h2>Categories</h2>
-<ul>
-    {% for category in categories %}
-    <li>{{ category.category_name }} - {{ category.description }}</li>
-    {% endfor %}
-</ul>
+{% extends "base.html" %}
+
+{% block title %}Menu Item Categories{% endblock %}
+
+{% block content %}
+<h2 class="my-4">Menu Item Categories</h2>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Category Name</th>
+            <th>Description</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for category in categories %}
+        <tr>
+            <td>{{ category.category_name }}</td>
+            <td>{{ category.description }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<a href="{{ url_for('add_category') }}" class="btn btn-primary">Add New Category</a>
+{% endblock %}

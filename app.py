@@ -66,11 +66,12 @@ def view_orders():
 def edit_order(id):
     order = Order.query.get_or_404(id)  # Get the order by ID
     order_items = OrderItem.query.filter_by(order_id=id).all()  # Get the associated order items
+    all_menu_items = MenuItem.query.all()  # Get all available menu items
     
     if request.method == 'POST':
         total_price = 0.0
 
-        # Loop through the submitted menu items and their updated quantities
+        # Update existing order items
         for order_item in order_items:
             new_quantity = int(request.form.get(f'quantity_{order_item.id}', 0))
             
@@ -81,14 +82,26 @@ def edit_order(id):
             else:
                 # If quantity is zero, delete the order item
                 db.session.delete(order_item)
-        
+
+        # Add new items to the order
+        for menu_item in all_menu_items:
+            new_quantity = int(request.form.get(f'new_quantity_{menu_item.id}', 0))
+            if new_quantity > 0:
+                # Check if this menu item is already in the order
+                existing_order_item = OrderItem.query.filter_by(order_id=order.id, menu_item_id=menu_item.id).first()
+                if not existing_order_item:
+                    # Add the new item to the order
+                    new_order_item = OrderItem(order_id=order.id, menu_item_id=menu_item.id, quantity=new_quantity)
+                    db.session.add(new_order_item)
+                total_price += menu_item.price * new_quantity
+
         # Update the total price of the order
         order.total_price = total_price
         db.session.commit()
 
         return redirect(url_for('view_orders'))
 
-    return render_template('edit_order.html', order=order, order_items=order_items)
+    return render_template('edit_order.html', order=order, order_items=order_items, menu_items=all_menu_items)
 
 # Route to mark an order as completed
 @app.route('/complete_order/<int:id>')

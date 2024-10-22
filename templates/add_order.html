@@ -1,36 +1,33 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Add Order</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-</head>
-<body>
-    <div class="container">
-        <h2>Add an Order</h2>
-        <form method="POST">
-            <h3>Select Menu Items</h3>
-        
-            <table>
-                <thead>
-                    <tr>
-                        <th>Menu Item</th>
-                        <th>Price</th>
-                        <th>Quantity</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for item in menu_items %}
-                    <tr>
-                        <td>{{ item.item_name }}</td>
-                        <td>${{ item.price }}</td>
-                        <td><input type="number" name="item_{{ item.id }}" min="0" value="0"></td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        
-            <button type="submit">Create Order</button>
-        </form>
-    </div>
-</body>
-</html>
+{% extends "base.html" %}
+
+{% block title %}Add Order{% endblock %}
+
+{% block content %}
+<h2 class="my-4">Add New Order</h2>
+
+<form method="POST">
+    <h3>Select Menu Items</h3>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Menu Item</th>
+                <th>Price</th>
+                <th>Quantity</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in menu_items %}
+            <tr>
+                <td>{{ item.item_name }}</td>
+                <td>${{ item.price }}</td>
+                <td><input type="number" name="item_{{ item.id }}" min="0" value="0"></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <button type="submit" class="btn btn-primary">Create Order</button>
+</form>
+<a href="{{ url_for('view_orders') }}" class="btn btn-secondary">Back to Orders</a>
+{% endblock %}
