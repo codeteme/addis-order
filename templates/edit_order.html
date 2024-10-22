@@ -1,23 +1,40 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Order</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
     <div class="container">
-        <h2>Edit Order</h2>
+        <h2 class="my-4">Edit Order #{{ order.id }}</h2>
+
         <form method="POST">
-            <div class="form-group">
-                <label for="item">Item:</label>
-                <input type="text" class="form-control" id="item" name="item" value="{{ order.item }}" required>
-            </div>
-            <div class="form-group">
-                <label for="quantity">Quantity:</label>
-                <input type="text" class="form-control" id="quantity" name="quantity" value="{{ order.quantity }}" required>
-            </div>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Menu Item</th>
+                        <th>Current Quantity</th>
+                        <th>Update Quantity</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order_item in order_items %}
+                    <tr>
+                        <td>{{ order_item.menu_item.item_name }}</td>
+                        <td>{{ order_item.quantity }}</td>
+                        <td>
+                            <input type="number" name="quantity_{{ order_item.id }}" value="{{ order_item.quantity }}" min="0">
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
             <button type="submit" class="btn btn-primary">Update Order</button>
         </form>
+
+        <a href="{{ url_for('view_orders') }}" class="btn btn-secondary">Back to Orders</a>
     </div>
 </body>
 </html>

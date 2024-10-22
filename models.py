@@ -5,10 +5,9 @@ db = SQLAlchemy()
 class Order(db.Model):
     __tablename__ = 'orders'
     id = db.Column(db.Integer, primary_key=True)
-    item = db.Column(db.String(80), nullable=False)
-    quantity = db.Column(db.Integer, nullable=False)
     created_at = db.Column(db.DateTime, nullable=False, default=db.func.now())
-    status = db.Column(db.String(10), nullable=False, default='active')  # Status column
+    status = db.Column(db.String(10), nullable=False, default='active')
+    total_price = db.Column(db.Float, nullable=False, default=0.0)  # Automatically calculated
 
     def __repr__(self):
         return f'<Order {self.item} - {self.status}>'
@@ -35,3 +34,14 @@ class MenuItem(db.Model):
 
     def __repr__(self):
         return f'<MenuItem {self.item_name}>'
+    
+class OrderItem(db.Model):
+    __tablename__ = 'order_items'
+    id = db.Column(db.Integer, primary_key=True)
+    order_id = db.Column(db.Integer, db.ForeignKey('orders.id'), nullable=False)
+    menu_item_id = db.Column(db.Integer, db.ForeignKey('menu_items.id'), nullable=False)
+    quantity = db.Column(db.Integer, nullable=False)
+
+    # Relationships
+    menu_item = db.relationship('MenuItem', backref='order_items')
+    order = db.relationship('Order', backref='order_items')

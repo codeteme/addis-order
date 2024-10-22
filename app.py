@@ -1,6 +1,6 @@
 from flask import Flask, request, redirect, url_for, render_template
 from flask_migrate import Migrate
-from models import db, Order, MenuItemCategory, MenuItem  # Import new models
+from models import db, Order, OrderItem, MenuItem, MenuItemCategory  # Import models
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -22,17 +22,38 @@ with app.app_context():
 def index():
     return "Welcome to the Order Management System!"
 
-# Route to add a new order
 @app.route('/add_order', methods=['GET', 'POST'])
 def add_order():
+    menu_items = MenuItem.query.all()  # Get all available menu items
+
     if request.method == 'POST':
-        item = request.form.get('item')
-        quantity = request.form.get('quantity')
-        order = Order(item=item, quantity=quantity)
+        order = Order()
         db.session.add(order)
+        db.session.flush()  # Flush to get the order ID before adding order items
+
+        total_price = 0.0
+
+        # Loop through the submitted menu items and quantities
+        for menu_item_id, quantity in request.form.items():
+            if menu_item_id.startswith('item_'):  # Filter for menu item entries
+                menu_item_id = int(menu_item_id.split('_')[1])  # Extract ID
+                quantity = int(quantity)
+
+                if quantity > 0:
+                    menu_item = MenuItem.query.get(menu_item_id)
+                    order_item = OrderItem(order_id=order.id, menu_item_id=menu_item.id, quantity=quantity)
+                    db.session.add(order_item)
+
+                    # Update total price
+                    total_price += menu_item.price * quantity
+
+        # Update the order with the calculated total price
+        order.total_price = total_price
         db.session.commit()
+
         return redirect(url_for('view_orders'))
-    return render_template('add_order.html')
+
+    return render_template('add_order.html', menu_items=menu_items)
 
 # Route to view all orders
 @app.route('/orders')
@@ -43,13 +64,31 @@ def view_orders():
 # Route to edit an order
 @app.route('/edit_order/<int:id>', methods=['GET', 'POST'])
 def edit_order(id):
-    order = Order.query.get_or_404(id)
+    order = Order.query.get_or_404(id)  # Get the order by ID
+    order_items = OrderItem.query.filter_by(order_id=id).all()  # Get the associated order items
+    
     if request.method == 'POST':
-        order.item = request.form.get('item')
-        order.quantity = request.form.get('quantity')
+        total_price = 0.0
+
+        # Loop through the submitted menu items and their updated quantities
+        for order_item in order_items:
+            new_quantity = int(request.form.get(f'quantity_{order_item.id}', 0))
+            
+            # Update quantity if it's greater than zero
+            if new_quantity > 0:
+                order_item.quantity = new_quantity
+                total_price += order_item.menu_item.price * new_quantity
+            else:
+                # If quantity is zero, delete the order item
+                db.session.delete(order_item)
+        
+        # Update the total price of the order
+        order.total_price = total_price
         db.session.commit()
+
         return redirect(url_for('view_orders'))
-    return render_template('edit_order.html', order=order)
+
+    return render_template('edit_order.html', order=order, order_items=order_items)
 
 # Route to mark an order as completed
 @app.route('/complete_order/<int:id>')
