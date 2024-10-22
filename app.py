@@ -1,5 +1,6 @@
 from flask import Flask, request, redirect, url_for, render_template
 from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -10,6 +11,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Initialize the database
 db = SQLAlchemy(app)
+migrate = Migrate(app, db)  # Initialize Flask-Migrate
 
 # Define the Order model
 class Order(db.Model):
@@ -17,6 +19,7 @@ class Order(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     item = db.Column(db.String(80), nullable=False)
     quantity = db.Column(db.Integer, nullable=False)
+    created_at = db.Column(db.DateTime, nullable=False, default=db.func.now())  # New column for timestamp
 
     def __repr__(self):
         return f'<Order {self.item}>'
