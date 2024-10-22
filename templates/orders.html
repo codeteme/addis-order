@@ -23,7 +23,7 @@
             <td>
                 <ul>
                     {% for order_item in order.order_items %}
-                        <li>{{ order_item.menu_item.item_name }} - Quantity: {{ order_item.quantity }}</li>
+                    <li>{{ order_item.menu_item.item_name }} - Quantity: {{ order_item.quantity }}</li>
                     {% endfor %}
                 </ul>
             </td>
@@ -31,14 +31,14 @@
             <td>${{ order.total_price }}</td>
             <td>
                 {% if order.status == 'active' %}
-                    <a href="{{ url_for('complete_order', id=order.id) }}" class="btn btn-success">Complete</a>
+                <a href="{{ url_for('main.complete_order', id=order.id) }}" class="btn btn-success">Complete</a>
                 {% endif %}
-                <a href="{{ url_for('edit_order', id=order.id) }}" class="btn btn-warning">Edit</a>
-                <a href="{{ url_for('delete_order', id=order.id) }}" class="btn btn-danger">Delete</a>
+                <a href="{{ url_for('main.edit_order', id=order.id) }}" class="btn btn-warning">Edit</a>
+                <a href="{{ url_for('main.delete_order', id=order.id) }}" class="btn btn-danger">Delete</a>
             </td>
         </tr>
         {% endfor %}
     </tbody>
 </table>
-<a href="{{ url_for('add_order') }}" class="btn btn-primary">Create New Order</a>
+<a href="{{ url_for('main.add_order') }}" class="btn btn-primary">Create New Order</a>
 {% endblock %}

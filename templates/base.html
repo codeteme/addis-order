@@ -9,17 +9,17 @@
 <body>
     <!-- Navigation Bar -->
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="/">AddisOrder</a>
+        <a class="navbar-brand" href="{{ url_for('main.index') }}">AddisOrder</a>
         <div class="collapse navbar-collapse">
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('view_orders') }}">Orders</a>
+                    <a class="nav-link" href="{{ url_for('main.view_orders') }}">View Orders</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('view_menu_items') }}">Menu Items</a>
+                    <a class="nav-link" href="{{ url_for('main.view_menu_items') }}">View Menu Items</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('view_categories') }}">Menu Item Categories</a>
+                    <a class="nav-link" href="{{ url_for('main.view_categories') }}">View Menu Item Categories</a>
                 </li>
             </ul>
         </div>

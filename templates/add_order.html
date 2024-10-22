@@ -7,7 +7,6 @@
 
 <form method="POST">
     <h3>Select Menu Items</h3>
-
     <table class="table">
         <thead>
             <tr>
@@ -26,8 +25,7 @@
             {% endfor %}
         </tbody>
     </table>
-
     <button type="submit" class="btn btn-primary">Create Order</button>
 </form>
-<a href="{{ url_for('view_orders') }}" class="btn btn-secondary">Back to Orders</a>
+<a href="{{ url_for('main.view_orders') }}" class="btn btn-secondary">Back to Orders</a>
 {% endblock %}
