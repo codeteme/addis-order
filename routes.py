@@ -33,10 +33,21 @@ def add_order():
 
     return render_template('add_order.html', menu_items=menu_items)
 
-@main.route('/orders')
+@main.route('/orders', methods=['GET', 'POST'])
 def view_orders():
-    orders = Order.query.all()
-    return render_template('orders.html', orders=orders)
+    search_query = request.args.get('search', '')  # Get the search query from the input
+
+    if search_query:
+        # If the search query is a digit, search by Order ID
+        if search_query.isdigit():
+            orders = Order.query.filter_by(id=int(search_query)).all()
+        else:
+            # Search by item name (case-insensitive)
+            orders = Order.query.join(OrderItem).join(MenuItem).filter(MenuItem.item_name.ilike(f'%{search_query}%')).all()
+    else:
+        orders = Order.query.all()  # If no search query, show all orders
+
+    return render_template('orders.html', orders=orders, search_query=search_query)
 
 @main.route('/edit_order/<int:id>', methods=['GET', 'POST'])
 def edit_order(id):
