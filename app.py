@@ -1,6 +1,6 @@
 from flask import Flask, request, redirect, url_for, render_template
 from flask_migrate import Migrate
-from models import db, Order  # Import from models.py
+from models import db, Order, MenuItemCategory, MenuItem  # Import new models
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -67,6 +67,46 @@ def delete_order(id):
     db.session.delete(order)
     db.session.commit()
     return redirect(url_for('view_orders'))
+
+
+# Route to add a new category
+@app.route('/add_category', methods=['GET', 'POST'])
+def add_category():
+    if request.method == 'POST':
+        category_name = request.form.get('category_name')
+        description = request.form.get('description')
+        category = MenuItemCategory(category_name=category_name, description=description)
+        db.session.add(category)
+        db.session.commit()
+        return redirect(url_for('view_categories'))
+    return render_template('add_category.html')
+
+# Route to view all categories
+@app.route('/categories')
+def view_categories():
+    categories = MenuItemCategory.query.all()
+    return render_template('categories.html', categories=categories)
+
+# Route to add a new menu item
+@app.route('/add_menu_item', methods=['GET', 'POST'])
+def add_menu_item():
+    categories = MenuItemCategory.query.all()  # Get all categories for the dropdown
+    if request.method == 'POST':
+        item_name = request.form.get('item_name')
+        price = float(request.form.get('price'))
+        description = request.form.get('description')
+        category_id = request.form.get('category_id')  # Get selected category
+        menu_item = MenuItem(item_name=item_name, description=description, price=price, category_id=category_id)
+        db.session.add(menu_item)
+        db.session.commit()
+        return redirect(url_for('view_menu_items'))
+    return render_template('add_menu_item.html', categories=categories)
+
+# Route to view all menu items
+@app.route('/menu_items')
+def view_menu_items():
+    menu_items = MenuItem.query.all()
+    return render_template('menu_items.html', menu_items=menu_items)
 
 # Run the Flask app
 if __name__ == '__main__':

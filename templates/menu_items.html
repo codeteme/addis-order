@@ -1,0 +1,6 @@
+<h2>Menu Items</h2>
+<ul>
+    {% for item in menu_items %}
+    <li>{{ item.item_name }} - {{ item.description }} (Category: {{ item.category.category_name }}) - ${{ item.price }}</li>
+    {% endfor %}
+</ul>
