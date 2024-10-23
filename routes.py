@@ -113,10 +113,22 @@ def add_category():
         return redirect(url_for('main.view_categories'))
     return render_template('add_category.html')
 
-@main.route('/categories')
+@main.route('/categories', methods=['GET', 'POST'])
 def view_categories():
-    categories = MenuItemCategory.query.all()
-    return render_template('categories.html', categories=categories)
+    search_query = request.args.get('search', '')  # Get the search query from the input
+
+    query = MenuItemCategory.query
+
+    # Filter by search query (Category Name or Description)
+    if search_query:
+        query = query.filter(
+            MenuItemCategory.category_name.ilike(f'%{search_query}%') |
+            MenuItemCategory.description.ilike(f'%{search_query}%')
+        )
+
+    categories = query.all()
+
+    return render_template('categories.html', categories=categories, search_query=search_query)
 
 @main.route('/add_menu_item', methods=['GET', 'POST'])
 def add_menu_item():
@@ -132,7 +144,22 @@ def add_menu_item():
         return redirect(url_for('main.view_menu_items'))
     return render_template('add_menu_item.html', categories=categories)
 
-@main.route('/menu_items')
+@main.route('/menu_items', methods=['GET', 'POST'])
 def view_menu_items():
-    menu_items = MenuItem.query.all()
-    return render_template('menu_items.html', menu_items=menu_items)
+    search_query = request.args.get('search', '')  # Get search query from input
+    category_filter = request.args.get('category_filter', '')  # Get category filter from input
+
+    query = MenuItem.query
+
+    # Filter by search query (Menu Item name)
+    if search_query:
+        query = query.filter(MenuItem.item_name.ilike(f'%{search_query}%'))
+
+    # Filter by category if a filter is selected
+    if category_filter:
+        query = query.filter_by(category_id=category_filter)
+
+    menu_items = query.all()
+    categories = MenuItemCategory.query.all()  # To populate the category filter dropdown
+
+    return render_template('menu_items.html', menu_items=menu_items, search_query=search_query, category_filter=category_filter, categories=categories)

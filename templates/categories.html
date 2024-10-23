@@ -1,15 +1,36 @@
 {% extends "base.html" %}
 
+{% block title %}Menu Item Categories{% endblock %}
+
 {% block content %}
-<div class="row mb-4">
+<div class="row">
     <div class="col-md-6">
-        <h2>Menu Categories</h2>
+        <h2>Menu Item Categories</h2>
     </div>
     <div class="col-md-6 text-end">
         <a href="{{ url_for('main.add_category') }}" class="btn btn-primary">Add New Category</a>
     </div>
 </div>
 
+<!-- Search Form -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="card-title mb-0">Search Categories</h5>
+    </div>
+    <div class="card-body">
+        <form method="GET" action="{{ url_for('main.view_categories') }}" class="row g-3">
+            <div class="col-md-8">
+                <input type="text" name="search" value="{{ search_query }}" class="form-control" placeholder="Search by Category Name or Description">
+            </div>
+            <div class="col-md-4 text-end">
+                <button type="submit" class="btn btn-primary">Search</button>
+                <a href="{{ url_for('main.view_categories') }}" class="btn btn-secondary">Clear Search</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Categories Table -->
 <div class="card">
     <div class="card-header">
         <h5 class="card-title mb-0">Categories List</h5>

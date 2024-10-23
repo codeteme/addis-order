@@ -1,7 +1,9 @@
 {% extends "base.html" %}
 
+{% block title %}Menu Items{% endblock %}
+
 {% block content %}
-<div class="row mb-4">
+<div class="row">
     <div class="col-md-6">
         <h2>Menu Items</h2>
     </div>
@@ -10,6 +12,33 @@
     </div>
 </div>
 
+<!-- Search and Filter Form -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="card-title mb-0">Search and Filter Menu Items</h5>
+    </div>
+    <div class="card-body">
+        <form method="GET" action="{{ url_for('main.view_menu_items') }}" class="row g-3">
+            <div class="col-md-4">
+                <input type="text" name="search" value="{{ search_query }}" class="form-control" placeholder="Search by Item Name">
+            </div>
+            <div class="col-md-4">
+                <select name="category_filter" class="form-select">
+                    <option value="">All Categories</option>
+                    {% for category in categories %}
+                    <option value="{{ category.id }}" {% if category_filter == category.id %}selected{% endif %}>{{ category.category_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-4 text-end">
+                <button type="submit" class="btn btn-primary">Search</button>
+                <a href="{{ url_for('main.view_menu_items') }}" class="btn btn-secondary">Clear Filters</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Menu Items Table -->
 <div class="card">
     <div class="card-header">
         <h5 class="card-title mb-0">Menu Items List</h5>
@@ -19,7 +48,7 @@
             <table class="table">
                 <thead>
                     <tr>
-                        <th>Item</th>
+                        <th>Menu Item</th>
                         <th>Price</th>
                         <th>Description</th>
                         <th>Category</th>
@@ -30,7 +59,7 @@
                     <tr>
                         <td>{{ item.item_name }}</td>
                         <td>${{ item.price }}</td>
-                        <td>{{ item.description }}</td>
+                        <td>{{ item.description or "No description available" }}</td>
                         <td>{{ item.category.category_name }}</td>
                     </tr>
                     {% endfor %}
