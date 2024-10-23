@@ -1,84 +1,116 @@
 {% extends "base.html" %}
 
-{% block title %}Orders{% endblock %}
-
 {% block content %}
-<h2 class="my-4">Orders</h2>
-
-<!-- Search Form -->
-<form method="GET" action="{{ url_for('main.view_orders') }}">
-    <div class="form-group">
-        <input type="text" name="search" value="{{ search_query }}" class="form-control" placeholder="Search by Order ID or Item Name">
+<div class="row mb-4">
+    <div class="col-md-6">
+        <h2>Orders</h2>
     </div>
-    <button type="submit" class="btn btn-primary mb-3">Search</button>
-    <a href="{{ url_for('main.view_orders') }}" class="btn btn-secondary mb-3">Clear Search</a>
-</form>
+    <div class="col-md-6 text-end">
+        <a href="{{ url_for('main.add_order') }}" class="btn btn-primary">Create New Order</a>
+    </div>
+</div>
+
+<!-- Search and Filter Form -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="card-title mb-0">Search and Filter Orders</h5>
+    </div>
+    <div class="card-body">
+        <form method="GET" action="{{ url_for('main.view_orders') }}" class="row g-3">
+            <div class="col-md-4">
+                <input type="text" name="search" value="{{ search_query }}" class="form-control" placeholder="Search by Order ID or Item Name">
+            </div>
+            <div class="col-md-3">
+                <select name="status_filter" class="form-select">
+                    <option value="">All Statuses</option>
+                    <option value="active" {% if status_filter == 'active' %}selected{% endif %}>Active</option>
+                    <option value="completed" {% if status_filter == 'completed' %}selected{% endif %}>Completed</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-primary">Search</button>
+                <a href="{{ url_for('main.view_orders') }}" class="btn btn-secondary">Clear Filters</a>
+            </div>
+        </form>
+    </div>
+</div>
 
 <!-- Orders Table -->
-<table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>
-                <a href="{{ url_for('main.view_orders', sort_by='id', sort_order='desc' if sort_order == 'asc' and sort_by == 'id' else 'asc') }}">
-                    Order ID
-                    {% if sort_by == 'id' %}
-                        {% if sort_order == 'asc' %} ▲ {% else %} ▼ {% endif %}
-                    {% endif %}
-                </a>
-            </th>
-            <th>
-                <a href="{{ url_for('main.view_orders', sort_by='status', sort_order='desc' if sort_order == 'asc' and sort_by == 'status' else 'asc') }}">
-                    Status
-                    {% if sort_by == 'status' %}
-                        {% if sort_order == 'asc' %} ▲ {% else %} ▼ {% endif %}
-                    {% endif %}
-                </a>
-            </th>
-            <th>Menu Items</th>
-            <th>
-                <a href="{{ url_for('main.view_orders', sort_by='created_at', sort_order='desc' if sort_order == 'asc' and sort_by == 'created_at' else 'asc') }}">
-                    Order Created At
-                    {% if sort_by == 'created_at' %}
-                        {% if sort_order == 'asc' %} ▲ {% else %} ▼ {% endif %}
-                    {% endif %}
-                </a>
-            </th>
-            <th>
-                <a href="{{ url_for('main.view_orders', sort_by='total_price', sort_order='desc' if sort_order == 'asc' and sort_by == 'total_price' else 'asc') }}">
-                    Total Price
-                    {% if sort_by == 'total_price' %}
-                        {% if sort_order == 'asc' %} ▲ {% else %} ▼ {% endif %}
-                    {% endif %}
-                </a>
-            </th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for order in orders %}
-        <tr>
-            <td>{{ order.id }}</td>
-            <td>{{ order.status }}</td>
-            <td>
-                <ul>
-                    {% for order_item in order.order_items %}
-                    <li>{{ order_item.menu_item.item_name }} - Quantity: {{ order_item.quantity }}</li>
+<div class="card">
+    <div class="card-header">
+        <h5 class="card-title mb-0">Orders List</h5>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>
+                            <a href="{{ url_for('main.view_orders', sort_by='id', sort_order='desc' if sort_order == 'asc' and sort_by == 'id' else 'asc') }}">
+                                Order ID
+                                {% if sort_by == 'id' %}
+                                    {% if sort_order == 'asc' %} ▲ {% else %} ▼ {% endif %}
+                                {% endif %}
+                            </a>
+                        </th>
+                        <th>
+                            <a href="{{ url_for('main.view_orders', sort_by='status', sort_order='desc' if sort_order == 'asc' and sort_by == 'status' else 'asc') }}">
+                                Status
+                                {% if sort_by == 'status' %}
+                                    {% if sort_order == 'asc' %} ▲ {% else %} ▼ {% endif %}
+                                {% endif %}
+                            </a>
+                        </th>
+                        <th>Menu Items</th>
+                        <th>
+                            <a href="{{ url_for('main.view_orders', sort_by='created_at', sort_order='desc' if sort_order == 'asc' and sort_by == 'created_at' else 'asc') }}">
+                                Created At
+                                {% if sort_by == 'created_at' %}
+                                    {% if sort_order == 'asc' %} ▲ {% else %} ▼ {% endif %}
+                                {% endif %}
+                            </a>
+                        </th>
+                        <th>
+                            <a href="{{ url_for('main.view_orders', sort_by='total_price', sort_order='desc' if sort_order == 'asc' and sort_by == 'total_price' else 'asc') }}">
+                                Total Price
+                                {% if sort_by == 'total_price' %}
+                                    {% if sort_order == 'asc' %} ▲ {% else %} ▼ {% endif %}
+                                {% endif %}
+                            </a>
+                        </th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in orders %}
+                    <tr>
+                        <td>{{ order.id }}</td>
+                        <td>
+                            <span class="badge {% if order.status == 'completed' %}bg-success{% elif order.status == 'active' %}bg-warning{% else %}bg-secondary{% endif %}">
+                                {{ order.status|title }}
+                            </span>
+                        </td>
+                        <td>
+                            <ul>
+                                {% for order_item in order.order_items %}
+                                <li>{{ order_item.menu_item.item_name }} - Quantity: {{ order_item.quantity }}</li>
+                                {% endfor %}
+                            </ul>
+                        </td>
+                        <td>{{ order.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                        <td>${{ order.total_price }}</td>
+                        <td>
+                            {% if order.status == 'active' %}
+                            <a href="{{ url_for('main.complete_order', id=order.id) }}" class="btn btn-success">Complete</a>
+                            {% endif %}
+                            <a href="{{ url_for('main.edit_order', id=order.id) }}" class="btn btn-warning">Edit</a>
+                            <a href="{{ url_for('main.delete_order', id=order.id) }}" class="btn btn-danger">Delete</a>
+                        </td>
+                    </tr>
                     {% endfor %}
-                </ul>
-            </td>
-            <td>{{ order.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</td>
-            <td>${{ order.total_price }}</td>
-            <td>
-                {% if order.status == 'active' %}
-                <a href="{{ url_for('main.complete_order', id=order.id) }}" class="btn btn-success">Complete</a>
-                {% endif %}
-                <a href="{{ url_for('main.edit_order', id=order.id) }}" class="btn btn-warning">Edit</a>
-                <a href="{{ url_for('main.delete_order', id=order.id) }}" class="btn btn-danger">Delete</a>
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-
-<a href="{{ url_for('main.add_order') }}" class="btn btn-primary">Create New Order</a>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 {% endblock %}

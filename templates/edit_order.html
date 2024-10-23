@@ -3,54 +3,76 @@
 {% block title %}Edit Order{% endblock %}
 
 {% block content %}
-<h2 class="my-4">Edit Order #{{ order.id }}</h2>
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <h2 class="my-4">Edit Order #{{ order.id }}</h2>
 
-<form method="POST">
-    <h3>Existing Items</h3>
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>Menu Item</th>
-                <th>Current Quantity</th>
-                <th>Update Quantity</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for order_item in order_items %}
-            <tr>
-                <td>{{ order_item.menu_item.item_name }}</td>
-                <td>{{ order_item.quantity }}</td>
-                <td>
-                    <input type="number" name="quantity_{{ order_item.id }}" value="{{ order_item.quantity }}" min="0" class="form-control">
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+        <form method="POST">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Existing Items</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Menu Item</th>
+                                    <th>Current Quantity</th>
+                                    <th>Update Quantity</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for order_item in order_items %}
+                                <tr>
+                                    <td>{{ order_item.menu_item.item_name }}</td>
+                                    <td>{{ order_item.quantity }}</td>
+                                    <td>
+                                        <input type="number" name="quantity_{{ order_item.id }}" value="{{ order_item.quantity }}" min="0" class="form-control">
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
 
-    <h3>Add New Items</h3>
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>Menu Item</th>
-                <th>Price</th>
-                <th>Quantity</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for menu_item in menu_items %}
-            <tr>
-                <td>{{ menu_item.item_name }}</td>
-                <td>${{ menu_item.price }}</td>
-                <td>
-                    <input type="number" name="new_quantity_{{ menu_item.id }}" value="0" min="0" class="form-control">
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Add New Items</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Menu Item</th>
+                                    <th>Price</th>
+                                    <th>Quantity</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for menu_item in menu_items %}
+                                <tr>
+                                    <td>{{ menu_item.item_name }}</td>
+                                    <td>${{ menu_item.price }}</td>
+                                    <td>
+                                        <input type="number" name="new_quantity_{{ menu_item.id }}" value="0" min="0" class="form-control">
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
 
-    <button type="submit" class="btn btn-primary">Update Order</button>
-</form>
-<a href="{{ url_for('main.view_orders') }}" class="btn btn-secondary">Back to Orders</a>
+            <div class="text-end">
+                <button type="submit" class="btn btn-primary">Update Order</button>
+                <a href="{{ url_for('main.view_orders') }}" class="btn btn-secondary">Back to Orders</a>
+            </div>
+        </form>
+    </div>
+</div>
 {% endblock %}
