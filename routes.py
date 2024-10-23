@@ -35,19 +35,26 @@ def add_order():
 
 @main.route('/orders', methods=['GET', 'POST'])
 def view_orders():
-    search_query = request.args.get('search', '')  # Get the search query from the input
+    search_query = request.args.get('search', '')
+    sort_by = request.args.get('sort_by', 'id')  # Default sort by Order ID
+    sort_order = request.args.get('sort_order', 'asc')  # Default sort order ascending
 
+    # Build query based on search
+    query = Order.query
     if search_query:
-        # If the search query is a digit, search by Order ID
         if search_query.isdigit():
-            orders = Order.query.filter_by(id=int(search_query)).all()
+            query = query.filter_by(id=int(search_query))
         else:
-            # Search by item name (case-insensitive)
-            orders = Order.query.join(OrderItem).join(MenuItem).filter(MenuItem.item_name.ilike(f'%{search_query}%')).all()
-    else:
-        orders = Order.query.all()  # If no search query, show all orders
+            query = query.join(OrderItem).join(MenuItem).filter(MenuItem.item_name.ilike(f'%{search_query}%'))
 
-    return render_template('orders.html', orders=orders, search_query=search_query)
+    # Handle sorting
+    if sort_order == 'asc':
+        query = query.order_by(db.asc(getattr(Order, sort_by)))
+    else:
+        query = query.order_by(db.desc(getattr(Order, sort_by)))
+
+    orders = query.all()
+    return render_template('orders.html', orders=orders, search_query=search_query, sort_by=sort_by, sort_order=sort_order)
 
 @main.route('/edit_order/<int:id>', methods=['GET', 'POST'])
 def edit_order(id):

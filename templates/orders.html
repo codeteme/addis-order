@@ -18,11 +18,39 @@
 <table class="table table-bordered">
     <thead>
         <tr>
-            <th>Order ID</th>
-            <th>Status</th>
+            <th>
+                <a href="{{ url_for('main.view_orders', sort_by='id', sort_order='desc' if sort_order == 'asc' and sort_by == 'id' else 'asc') }}">
+                    Order ID
+                    {% if sort_by == 'id' %}
+                        {% if sort_order == 'asc' %} ▲ {% else %} ▼ {% endif %}
+                    {% endif %}
+                </a>
+            </th>
+            <th>
+                <a href="{{ url_for('main.view_orders', sort_by='status', sort_order='desc' if sort_order == 'asc' and sort_by == 'status' else 'asc') }}">
+                    Status
+                    {% if sort_by == 'status' %}
+                        {% if sort_order == 'asc' %} ▲ {% else %} ▼ {% endif %}
+                    {% endif %}
+                </a>
+            </th>
             <th>Menu Items</th>
-            <th>Order Created At</th>
-            <th>Total Price</th>
+            <th>
+                <a href="{{ url_for('main.view_orders', sort_by='created_at', sort_order='desc' if sort_order == 'asc' and sort_by == 'created_at' else 'asc') }}">
+                    Order Created At
+                    {% if sort_by == 'created_at' %}
+                        {% if sort_order == 'asc' %} ▲ {% else %} ▼ {% endif %}
+                    {% endif %}
+                </a>
+            </th>
+            <th>
+                <a href="{{ url_for('main.view_orders', sort_by='total_price', sort_order='desc' if sort_order == 'asc' and sort_by == 'total_price' else 'asc') }}">
+                    Total Price
+                    {% if sort_by == 'total_price' %}
+                        {% if sort_order == 'asc' %} ▲ {% else %} ▼ {% endif %}
+                    {% endif %}
+                </a>
+            </th>
             <th>Actions</th>
         </tr>
     </thead>
