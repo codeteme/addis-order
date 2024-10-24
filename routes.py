@@ -113,6 +113,19 @@ def add_category():
         return redirect(url_for('main.view_categories'))
     return render_template('add_category.html')
 
+@main.route('/edit_category/<int:id>', methods=['GET', 'POST'])
+def edit_category(id):
+    category = MenuItemCategory.query.get_or_404(id)
+
+    if request.method == 'POST':
+        category.category_name = request.form.get('category_name')
+        category.description = request.form.get('description')
+        db.session.commit()
+
+        return redirect(url_for('main.view_categories'))
+
+    return render_template('edit_category.html', category=category)
+
 @main.route('/categories', methods=['GET', 'POST'])
 def view_categories():
     search_query = request.args.get('search', '')  # Get the search query from the input
@@ -143,6 +156,22 @@ def add_menu_item():
         db.session.commit()
         return redirect(url_for('main.view_menu_items'))
     return render_template('add_menu_item.html', categories=categories)
+
+@main.route('/edit_menu_item/<int:id>', methods=['GET', 'POST'])
+def edit_menu_item(id):
+    menu_item = MenuItem.query.get_or_404(id)
+    categories = MenuItemCategory.query.all()  # Fetch all categories for dropdown
+
+    if request.method == 'POST':
+        menu_item.item_name = request.form.get('item_name')
+        menu_item.price = request.form.get('price', type=float)
+        menu_item.description = request.form.get('description')
+        menu_item.category_id = request.form.get('category_id')
+        db.session.commit()
+
+        return redirect(url_for('main.view_menu_items'))
+
+    return render_template('edit_menu_item.html', menu_item=menu_item, categories=categories)
 
 @main.route('/menu_items', methods=['GET', 'POST'])
 def view_menu_items():

@@ -45,13 +45,14 @@
     </div>
     <div class="card-body">
         <div class="table-responsive">
-            <table class="table">
+            <table class="table table-striped">
                 <thead>
                     <tr>
                         <th>Menu Item</th>
                         <th>Price</th>
                         <th>Description</th>
                         <th>Category</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -61,6 +62,9 @@
                         <td>${{ item.price }}</td>
                         <td>{{ item.description or "No description available" }}</td>
                         <td>{{ item.category.category_name }}</td>
+                        <td>
+                            <a href="{{ url_for('main.edit_menu_item', id=item.id) }}" class="btn btn-warning">Edit</a>
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>
