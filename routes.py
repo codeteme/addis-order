@@ -1,4 +1,4 @@
-from flask import Blueprint, request, redirect, url_for, render_template
+from flask import Blueprint, request, redirect, url_for, render_template, flash
 from models import db, Order, OrderItem, MenuItem, MenuItemCategory
 
 # Define a blueprint
@@ -172,6 +172,25 @@ def edit_menu_item(id):
         return redirect(url_for('main.view_menu_items'))
 
     return render_template('edit_menu_item.html', menu_item=menu_item, categories=categories)
+
+@main.route('/delete_menu_item/<int:id>', methods=['POST'])
+def delete_menu_item(id):
+    menu_item = MenuItem.query.get_or_404(id)
+    
+    # Check if the menu item is being referenced by any order items
+    order_items = OrderItem.query.filter_by(menu_item_id=menu_item.id).all()
+    
+    if order_items:
+        # If there are references, flash an error message and redirect back to the menu items page
+        flash('Cannot delete this menu item as it is being referenced by an order.', 'danger')
+        return redirect(url_for('main.view_menu_items'))
+    
+    # If no references, delete the menu item
+    db.session.delete(menu_item)
+    db.session.commit()
+
+    flash('Menu item deleted successfully.', 'success')
+    return redirect(url_for('main.view_menu_items'))
 
 @main.route('/menu_items', methods=['GET', 'POST'])
 def view_menu_items():
