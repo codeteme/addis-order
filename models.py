@@ -45,3 +45,30 @@ class OrderItem(db.Model):
     # Relationships
     menu_item = db.relationship('MenuItem', backref='order_items')
     order = db.relationship('Order', backref='order_items')
+
+class Supplier(db.Model):
+    __tablename__ = 'suppliers'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    contact_info = db.Column(db.String(255), nullable=True)
+
+    inventory_items = db.relationship('InventoryItem', backref='supplier', lazy=True)
+
+class InventoryCategory(db.Model):
+    __tablename__ = 'inventory_categories'
+    id = db.Column(db.Integer, primary_key=True)
+    category_name = db.Column(db.String(100), nullable=False)
+
+    inventory_items = db.relationship('InventoryItem', backref='category', lazy=True)
+
+class InventoryItem(db.Model):
+    __tablename__ = 'inventory_items'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    unit_of_measurement = db.Column(db.String(50), nullable=False)
+    stock_quantity = db.Column(db.Float, nullable=False, default=0.0)
+    reorder_level = db.Column(db.Float, nullable=False)
+    expiration_date = db.Column(db.Date, nullable=True)
+
+    category_id = db.Column(db.Integer, db.ForeignKey('inventory_categories.id'), nullable=False)
+    supplier_id = db.Column(db.Integer, db.ForeignKey('suppliers.id'), nullable=True)

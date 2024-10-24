@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}Suppliers{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-6">
+        <h2>Suppliers</h2>
+    </div>
+    <div class="col-md-6 text-end">
+        <a href="{{ url_for('main.add_supplier') }}" class="btn btn-primary">Add New Supplier</a>
+    </div>
+</div>
+
+<div class="card mt-4">
+    <div class="card-header">
+        <h5 class="card-title mb-0">Suppliers List</h5>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Supplier Name</th>
+                        <th>Contact Info</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for supplier in suppliers %}
+                    <tr>
+                        <td>{{ supplier.name }}</td>
+                        <td>{{ supplier.contact_info }}</td>
+                        <td>
+                            <a href="{{ url_for('main.edit_supplier', id=supplier.id) }}" class="btn btn-warning">Edit</a>
+                            <form action="{{ url_for('main.delete_supplier', id=supplier.id) }}" method="POST" style="display:inline;">
+                                <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this supplier?');">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

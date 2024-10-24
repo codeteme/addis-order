@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}Inventory Categories{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-6">
+        <h2>Inventory Categories</h2>
+    </div>
+    <div class="col-md-6 text-end">
+        <a href="{{ url_for('main.add_inventory_category') }}" class="btn btn-primary">Add New Category</a>
+    </div>
+</div>
+
+<div class="card mt-4">
+    <div class="card-header">
+        <h5 class="card-title mb-0">Categories List</h5>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Category Name</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for category in categories %}
+                    <tr>
+                        <td>{{ category.category_name }}</td>
+                        <td>
+                            <a href="{{ url_for('main.edit_inventory_category', id=category.id) }}" class="btn btn-warning">Edit</a>
+                            <form action="{{ url_for('main.delete_inventory_category', id=category.id) }}" method="POST" style="display:inline;">
+                                <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this category?');">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

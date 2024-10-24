@@ -1,5 +1,5 @@
 from flask import Blueprint, request, redirect, url_for, render_template, flash
-from models import db, Order, OrderItem, MenuItem, MenuItemCategory
+from models import db, Order, OrderItem, MenuItem, MenuItemCategory, InventoryCategory, InventoryItem, Supplier
 
 # Define a blueprint
 main = Blueprint('main', __name__)
@@ -211,3 +211,126 @@ def view_menu_items():
     categories = MenuItemCategory.query.all()  # To populate the category filter dropdown
 
     return render_template('menu_items.html', menu_items=menu_items, search_query=search_query, category_filter=category_filter, categories=categories)
+
+@main.route('/inventory_categories')
+def view_inventory_categories():
+    categories = InventoryCategory.query.all()
+    return render_template('inventory_categories.html', categories=categories)
+
+@main.route('/add_inventory_category', methods=['GET', 'POST'])
+def add_inventory_category():
+    if request.method == 'POST':
+        category_name = request.form.get('category_name')
+        new_category = InventoryCategory(category_name=category_name)
+        db.session.add(new_category)
+        db.session.commit()
+        flash('Inventory category added successfully.', 'success')
+        return redirect(url_for('main.view_inventory_categories'))
+    return render_template('add_inventory_category.html')
+
+@main.route('/edit_inventory_category/<int:id>', methods=['GET', 'POST'])
+def edit_inventory_category(id):
+    category = InventoryCategory.query.get_or_404(id)
+    if request.method == 'POST':
+        category.category_name = request.form.get('category_name')
+        db.session.commit()
+        flash('Inventory category updated successfully.', 'success')
+        return redirect(url_for('main.view_inventory_categories'))
+    return render_template('edit_inventory_category.html', category=category)
+
+@main.route('/delete_inventory_category/<int:id>', methods=['POST'])
+def delete_inventory_category(id):
+    category = InventoryCategory.query.get_or_404(id)
+    db.session.delete(category)
+    db.session.commit()
+    flash('Inventory category deleted successfully.', 'success')
+    return redirect(url_for('main.view_inventory_categories'))
+
+@main.route('/inventory_items')
+def view_inventory_items():
+    items = InventoryItem.query.all()
+    return render_template('inventory_items.html', items=items)
+
+@main.route('/add_inventory_item', methods=['GET', 'POST'])
+def add_inventory_item():
+    categories = InventoryCategory.query.all()
+    suppliers = Supplier.query.all()
+    if request.method == 'POST':
+        name = request.form.get('name')
+        unit_of_measurement = request.form.get('unit_of_measurement')
+        stock_quantity = request.form.get('stock_quantity', type=float)
+        reorder_level = request.form.get('reorder_level', type=float)
+        expiration_date = request.form.get('expiration_date')
+        category_id = request.form.get('category_id')
+        supplier_id = request.form.get('supplier_id')
+
+        new_item = InventoryItem(name=name, unit_of_measurement=unit_of_measurement, stock_quantity=stock_quantity, 
+                                 reorder_level=reorder_level, expiration_date=expiration_date, category_id=category_id, 
+                                 supplier_id=supplier_id)
+        db.session.add(new_item)
+        db.session.commit()
+        flash('Inventory item added successfully.', 'success')
+        return redirect(url_for('main.view_inventory_items'))
+    return render_template('add_inventory_item.html', categories=categories, suppliers=suppliers)
+
+@main.route('/edit_inventory_item/<int:id>', methods=['GET', 'POST'])
+def edit_inventory_item(id):
+    item = InventoryItem.query.get_or_404(id)
+    categories = InventoryCategory.query.all()
+    suppliers = Supplier.query.all()
+    if request.method == 'POST':
+        item.name = request.form.get('name')
+        item.unit_of_measurement = request.form.get('unit_of_measurement')
+        item.stock_quantity = request.form.get('stock_quantity', type=float)
+        item.reorder_level = request.form.get('reorder_level', type=float)
+        item.expiration_date = request.form.get('expiration_date')
+        item.category_id = request.form.get('category_id')
+        item.supplier_id = request.form.get('supplier_id')
+        db.session.commit()
+        flash('Inventory item updated successfully.', 'success')
+        return redirect(url_for('main.view_inventory_items'))
+    return render_template('edit_inventory_item.html', item=item, categories=categories, suppliers=suppliers)
+
+@main.route('/delete_inventory_item/<int:id>', methods=['POST'])
+def delete_inventory_item(id):
+    item = InventoryItem.query.get_or_404(id)
+    db.session.delete(item)
+    db.session.commit()
+    flash('Inventory item deleted successfully.', 'success')
+    return redirect(url_for('main.view_inventory_items'))
+
+@main.route('/suppliers')
+def view_suppliers():
+    suppliers = Supplier.query.all()
+    return render_template('suppliers.html', suppliers=suppliers)
+
+@main.route('/add_supplier', methods=['GET', 'POST'])
+def add_supplier():
+    if request.method == 'POST':
+        name = request.form.get('name')
+        contact_info = request.form.get('contact_info')
+        new_supplier = Supplier(name=name, contact_info=contact_info)
+        db.session.add(new_supplier)
+        db.session.commit()
+        flash('Supplier added successfully.', 'success')
+        return redirect(url_for('main.view_suppliers'))
+    return render_template('add_supplier.html')
+
+@main.route('/edit_supplier/<int:id>', methods=['GET', 'POST'])
+def edit_supplier(id):
+    supplier = Supplier.query.get_or_404(id)
+    if request.method == 'POST':
+        supplier.name = request.form.get('name')
+        supplier.contact_info = request.form.get('contact_info')
+        db.session.commit()
+        flash('Supplier updated successfully.', 'success')
+        return redirect(url_for('main.view_suppliers'))
+    return render_template('edit_supplier.html', supplier=supplier)
+
+@main.route('/delete_supplier/<int:id>', methods=['POST'])
+def delete_supplier(id):
+    supplier = Supplier.query.get_or_404(id)
+    db.session.delete(supplier)
+    db.session.commit()
+    flash('Supplier deleted successfully.', 'success')
+    return redirect(url_for('main.view_suppliers'))
