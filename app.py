@@ -1,9 +1,12 @@
 import os
+from dotenv import load_dotenv  # Import dotenv to load environment variables
 from flask import Flask
 from flask_migrate import Migrate
 from models import db
 from routes import main  # Import the routes blueprint
 
+# Load environment variables from .env file
+load_dotenv()
 # Initialize Flask app
 app = Flask(__name__)
 
@@ -11,7 +14,9 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = os.urandom(24)
 
 # PostgreSQL database configuration
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql+psycopg2://tmt0947:password@localhost/addis_order_db'
+app.config['SQLALCHEMY_DATABASE_URI'] = (
+    f"postgresql+psycopg2://{os.getenv('DB_USER')}:{os.getenv('DB_PASS')}@{os.getenv('DB_HOST')}/{os.getenv('DB_NAME')}"
+)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Initialize the database and migrations
