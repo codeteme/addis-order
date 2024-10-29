@@ -11,20 +11,21 @@ load_dotenv()  # Load environment variables from .env file
 # Initialize Flask app
 app = Flask(__name__)
 
-print("Test")
+# Environment and directory diagnostics
+print("Environment diagnostics:")
 print(f"Current working directory: {os.getcwd()}")
-print(f"Environment variables: {os.environ}")
+print(f"Environment variables loaded: {list(os.environ.keys())}")
 
-# WEBSITE_HOSTNAME exists only in production environment
+# Determine environment (production vs. development)
 if 'WEBSITE_HOSTNAME' not in os.environ:
-    # local development, where we'll use environment variables
-    print("Manual Test: dev")
-    print("Loading config.development and environment variables from .env file.")
+    # Local development environment
+    print("Environment: Development")
+    print("Loading development configuration.")
     app.config.from_object('azureproject.development')
 else:
-    # production
-    print("Manual Test: prod")
-    print("Loading config.production.")
+    # Production environment
+    print("Environment: Production")
+    print("Loading production configuration.")
     app.config.from_object('azureproject.production')
 
 app.config.update(
@@ -32,7 +33,8 @@ app.config.update(
     SQLALCHEMY_TRACK_MODIFICATIONS=False,
 )
 
-print("Works")
+print("Database configuration complete.")
+
 # Initialize the database and migrations
 db.init_app(app)
 migrate = Migrate(app, db)
@@ -40,10 +42,16 @@ migrate = Migrate(app, db)
 # Register the blueprint
 app.register_blueprint(main)
 
-# Create the tables in the database
+# Create tables if not exist
 with app.app_context():
     db.create_all()
 
 # Run the Flask app
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 8000))
+    print(f"Starting Flask app on port {port}...")
+    app.run(
+        host="0.0.0.0",
+        port=port,
+        debug=(app.config['ENV'] == 'development')
+    )
