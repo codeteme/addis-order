@@ -1,4 +1,5 @@
 import os
+import psycopg2
 
 # Load environment variables for production database connection
 print("Prod test")
@@ -25,7 +26,22 @@ for key in required_keys:
         raise KeyError(f"Missing required connection parameter: {key}")
     print(f"{key}: {conn_str_params[key]}")
 
-# Construct the DATABASE_URI for SQLAlchemy
+# Construct psycopg2 connection
+try:
+    cnx = psycopg2.connect(
+        user=conn_str_params['user'],
+        password=conn_str_params['password'],
+        host=conn_str_params['host'],
+        port=conn_str_params.get('port', '5432'),  # Default port if not in conn_str
+        dbname=conn_str_params['dbname']
+    )
+    print("Connected to the database successfully using psycopg2.")
+except psycopg2.Error as e:
+    print("Unable to connect to the database")
+    print(e)
+    raise
+
+# Construct the DATABASE_URI for SQLAlchemy, if needed
 DATABASE_URI = 'postgresql+psycopg2://{dbuser}:{dbpass}@{dbhost}/{dbname}?sslmode={sslmode}'.format(
     dbuser=conn_str_params['user'],
     dbpass=conn_str_params['password'],

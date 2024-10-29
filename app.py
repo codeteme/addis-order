@@ -1,39 +1,58 @@
 import os
-from dotenv import load_dotenv  # Import dotenv to load environment variables
+from dotenv import load_dotenv
 from flask import Flask
 from flask_migrate import Migrate
 from models import db
-from routes import main  # Import the routes blueprint
+from routes import main  # Import your blueprint here
 
-print("Loading environment variables from .env file.")
-load_dotenv()  # Load environment variables from .env file
 
 # Initialize Flask app
 app = Flask(__name__)
 
-# Environment and directory diagnostics
-print("Environment diagnostics:")
-print(f"Current working directory: {os.getcwd()}")
-print(f"Environment variables loaded: {list(os.environ.keys())}")
+# Check the environment and load the appropriate .env file
+if 'WEBSITE_HOSTNAME' in os.environ:
+    # Load production settings
+    print("production")
+    ENV="production"
+    FLASK_ENV="production"
 
-# Determine environment (production vs. development)
-if 'WEBSITE_HOSTNAME' not in os.environ:
-    # Local development environment
-    print("Environment: Development")
-    print("Loading development configuration.")
-    app.config.from_object('azureproject.development')
+    # Database connection parameters
+    DB_USER=os.environ.get('DB_USER')
+    DB_PASSWORD=os.environ.get('DB_PASSWORD')
+    DB_HOST=os.environ.get('DB_HOST')
+    DB_PORT=os.environ.get('DB_PORT')
+    DB_NAME=os.environ.get('DB_NAME')
+
+    print("+++++++++++++++++++++")
+    print(DB_USER)
+    print(DB_PASSWORD)
+    print(DB_HOST)
+    print(DB_PORT)
+    print(DB_NAME)
+
+    print("+++++++++++++++++++++")
+    print(os.getenv('DB_USER'))
+    print(os.getenv('DB_PASSWORD'))
+    print(os.getenv('DB_HOST'))
+    print(os.getenv('DB_PORT'))
+    print(os.getenv('DB_NAME'))
+    
+    app.config['ENV'] = ENV
+    app.config['FLASK_ENV'] = FLASK_ENV
+
 else:
-    # Production environment
-    print("Environment: Production")
-    print("Loading production configuration.")
-    app.config.from_object('azureproject.production')
+    # Load development settings
+    print("development")
+    load_dotenv('.env.development')
 
-app.config.update(
-    SQLALCHEMY_DATABASE_URI=app.config.get('DATABASE_URI'),
-    SQLALCHEMY_TRACK_MODIFICATIONS=False,
+
+# Set up database URI from environment variables
+app.config['SQLALCHEMY_DATABASE_URI'] = (
+    f"postgresql+psycopg2://{os.getenv('DB_USER')}:{os.getenv('DB_PASSWORD')}@"
+    f"{os.getenv('DB_HOST')}:{os.getenv('DB_PORT')}/{os.getenv('DB_NAME')}"
 )
-
-print("Database configuration complete.")
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+# app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 
 # Initialize the database and migrations
 db.init_app(app)
@@ -42,11 +61,14 @@ migrate = Migrate(app, db)
 # Register the blueprint
 app.register_blueprint(main)
 
-# Create tables if not exist
+# Create tables if they don’t exist
 with app.app_context():
     db.create_all()
 
-# Run the Flask app
+# # Run the app
+# if __name__ == '__main__':
+#     app.run(debug=app.config['ENV'] == 'development')
+
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 8000))
     print(f"Starting Flask app on port {port}...")
