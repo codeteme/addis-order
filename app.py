@@ -65,15 +65,6 @@ app.register_blueprint(main)
 with app.app_context():
     db.create_all()
 
-# # Run the app
-# if __name__ == '__main__':
-#     app.run(debug=app.config['ENV'] == 'development')
-
+# Run the Flask app
 if __name__ == '__main__':
-    port = int(os.environ.get("PORT", 8000))
-    print(f"Starting Flask app on port {port}...")
-    app.run(
-        host="0.0.0.0",
-        port=port,
-        debug=(app.config['ENV'] == 'development')
-    )
+    app.run(debug=True)
