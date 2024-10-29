@@ -17,9 +17,10 @@ print(conn_str_params['host'])
 print(conn_str_params['dbname'])
 print(conn_str_params['sslmode'])
 
-DATABASE_URI = 'postgresql+psycopg2://{dbuser}:{dbpass}@{dbhost}/{dbname}'.format(
+DATABASE_URI = 'postgresql+psycopg2://{dbuser}:{dbpass}@{dbhost}/{dbname}?sslmode={sslmode}'.format(
     dbuser=conn_str_params['user'],
     dbpass=conn_str_params['password'],
     dbhost=conn_str_params['host'],
-    dbname=conn_str_params['dbname']
+    dbname=conn_str_params['dbname'],
+    sslmode=conn_str_params['sslmode']
 )
