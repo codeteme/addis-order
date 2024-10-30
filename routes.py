@@ -261,6 +261,10 @@ def add_inventory_item():
         stock_quantity = request.form.get('stock_quantity', type=float)
         reorder_level = request.form.get('reorder_level', type=float)
         expiration_date = request.form.get('expiration_date')
+        
+        if not expiration_date:
+            expiration_date = None
+        
         category_id = request.form.get('category_id')
         supplier_id = request.form.get('supplier_id')
 

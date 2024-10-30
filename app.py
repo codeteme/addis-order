@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 from flask import Flask
 from flask_migrate import Migrate
 from models import db
-from routes import main  # Import your blueprint here
+from routes import main
 
 
 # Initialize Flask app
@@ -12,37 +12,38 @@ app = Flask(__name__)
 # Check the environment and load the appropriate .env file
 if 'WEBSITE_HOSTNAME' in os.environ:
     # Load production settings
-    print("production")
-    ENV="production"
-    FLASK_ENV="production"
-
-    # Database connection parameters
-    DB_USER=os.environ.get('DB_USER')
-    DB_PASSWORD=os.environ.get('DB_PASSWORD')
-    DB_HOST=os.environ.get('DB_HOST')
-    DB_PORT=os.environ.get('DB_PORT')
-    DB_NAME=os.environ.get('DB_NAME')
+    print("Load production environment ...")
+    
+    print("+++++++++++++++++++++")
+    print("os.environ.get")
+    print(os.environ.get('DB_USER'))
+    print(os.environ.get('DB_PASSWORD'))
+    print(os.environ.get('DB_HOST'))
+    print(os.environ.get('DB_PORT'))
+    print(os.environ.get('DB_NAME'))
+    print(os.environ.get('SECRET_KEY'))
+    print(os.environ.get('ENV'))
+    print(os.environ.get('FLASK_ENV'))
 
     print("+++++++++++++++++++++")
-    print(DB_USER)
-    print(DB_PASSWORD)
-    print(DB_HOST)
-    print(DB_PORT)
-    print(DB_NAME)
-
-    print("+++++++++++++++++++++")
+    print("os.getenv")
     print(os.getenv('DB_USER'))
     print(os.getenv('DB_PASSWORD'))
     print(os.getenv('DB_HOST'))
     print(os.getenv('DB_PORT'))
     print(os.getenv('DB_NAME'))
-    
+    print(os.getenv('ENV'))
+    print(os.getenv('FLASK_ENV'))
+    print(os.getenv('SECRET_KEY'))
+
+    ENV="production"
+    FLASK_ENV="production"
     app.config['ENV'] = ENV
     app.config['FLASK_ENV'] = FLASK_ENV
 
 else:
     # Load development settings
-    print("development")
+    print("Load development environment ...")
     load_dotenv('.env.development')
 
 
@@ -52,7 +53,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = (
     f"{os.getenv('DB_HOST')}:{os.getenv('DB_PORT')}/{os.getenv('DB_NAME')}"
 )
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-# app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 
 # Initialize the database and migrations
 db.init_app(app)
