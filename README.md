@@ -1,147 +1,141 @@
-Here’s an updated version of your README file to reflect the changes, including the Docker setup and Gunicorn configuration:
+##  Addis Order - Restaurant Management System
 
-AddisOrder
+Addis Order is a restaurant management system designed for businesses specializing in meat-based menus. The system streamlines order management, inventory tracking, and communication between waitstaff, butchers, and kitchen staff.
 
-AddisOrder is an intuitive restaurant order management system designed specifically for the vibrant dining scene in Ethiopia. This platform streamlines order processing, enhances communication between waitstaff and kitchens, and simplifies inventory management.
+### Features
 
-Project Setup
+* Order Management:
+	* Add, view, edit, and delete orders.
+	* Track order statuses (active or completed).
+	* Automatically calculate order totals based on menu items and quantities.
+* Menu Management:
+	* Add, view, edit, and delete menu items.
+	* Organize menu items by categories.
+	* Set prices and descriptions for menu items.
+* Inventory Management:
+	* Add, view, edit, and delete inventory items.
+	* Track stock quantities, reorder levels, and optional expiration dates.
+	* Categorize inventory items and associate them with suppliers.
+* Search and Filter:
+	* Search orders by Order ID or menu item names.
+	* Filter orders by status.
+	* Search and filter menu items and categories.
+* User-Friendly Interface:
+	* Navigation links for orders, menu items, and categories.
+	* Dynamic table sorting by columns.
+	* Modern, responsive design.
 
-1. Clone the Repository
+### Technologies Used
 
-Clone the repo to your local machine:
+* Backend: Flask (Python)
+* Frontend: Jinja2 templates, Bootstrap 5
+* Database: PostgreSQL
+* Environment Management: dotenv
+* Deployment: Render and Docker with Gunicorn
 
-git clone https://github.com/codeteme/addis-order.git
+### Setup Instructions
+
+#### Prerequisites
+
+* Python 3.11 or higher
+* PostgreSQL
+* pipenv or virtualenv
+* Docker (optional for deployment)
+
+#### Installation
+
+1. Clone the repository:
+```
+git clone https://github.com/yourusername/addis-order.git
 cd addis-order
+```
 
-2. Environment Variables
+2. Set up a virtual environment:
+```
+python3 -m venv .venv
+source .venv/bin/activate
+```
 
-The application uses environment variables for configuration, managed by .env files.
-	•	Development: Configure .env.development with the following variables:
+3. Install dependencies:
+```
+pip install -r requirements.txt
+```
 
-# Database connection parameters
+4. Set up the database:
+	* Create a PostgreSQL database (e.g., addis_order_db).
+	* Update .env.development with your database credentials.
+
+5.	Run migrations:
+```
+flask db upgrade
+```
+
+6. Start the development server:
+```
+flask run
+```
+### Deployment
+
+#### Using Docker
+
+1.	Build the Docker image:
+```
+docker build -t addis-order .
+```
+
+2.	Run the container:
+```
+docker run -p 8000:8000 addis-order
+```
+
+
+Using Render
+
+	1.	Deploy the application and PostgreSQL database to Render.
+	2.	Set the following environment variables in Render:
+	•	DB_USER
+	•	DB_PASSWORD
+	•	DB_HOST
+	•	DB_PORT
+	•	DB_NAME
+	•	SECRET_KEY
+	•	ENV=production
+	•	FLASK_ENV=production
+
+Configuration
+
+Environment Variables
+
+	•	Development environment: .env.development
+	•	Production environment: Environment variables are loaded directly.
+
+Example .env.development:
+
+```
 DB_USER=postgres
-DB_PASSWORD=password  # Replace with actual password
+DB_PASSWORD=password
 DB_HOST=localhost
 DB_PORT=5432
 DB_NAME=addis_order_db
-
-# Flask environment configuration
+SECRET_KEY=your-secret-key
 ENV=development
-FLASK_APP=app.py
 FLASK_ENV=development
+```
 
-# Secret Key for session management
-SECRET_KEY=your_secret_key_here
+### Testing
 
+1. Run the Flask app in development mode:
 
-	•	Production: Set these variables in your production environment (e.g., on Azure) to ensure the application connects to the correct database and has the correct secret key.
-
-3. Install Dependencies
-
-Create a virtual environment and install the dependencies:
-
-python -m venv venv
-source venv/bin/activate  # For Windows, use venv\Scripts\activate
-pip install -r requirements.txt
-
-4. Database Migration
-
-Ensure your database is ready by running migrations:
-
-flask db upgrade
-
-This will set up the necessary database tables.
-
-Running the Application
-
-Development Mode
-
-To run the application in development mode with flask run, use:
-
+```
 flask run
+```
 
-This command starts the application in debug mode, which auto-reloads on code changes and shows detailed error messages.
+2. Test features like adding, editing, and deleting orders, menu items, and inventory.
 
-Production Mode with Gunicorn
+### Contributing
 
-For production, use Gunicorn to serve the application:
+Feel free to submit issues or pull requests for improvements. Contributions are welcome!
 
-gunicorn --workers 4 --bind 0.0.0.0:8000 app:app
+### License
 
-This command starts the application with 4 worker processes, listening on port 8000.
-
-Docker Setup
-
-The project includes a Dockerfile for containerized deployment.
-	1.	Build the Docker Image:
-
-docker build -t addisorder .
-
-
-	2.	Run the Docker Container:
-
-docker run -p 8000:8000 addisorder
-
-
-
-This starts the containerized application on port 8000. The app is served by Gunicorn inside the Docker container, as specified in the CMD instruction of the Dockerfile.
-
-Configuration Files
-
-Gunicorn Configuration
-
-A custom gunicorn.conf.py file is provided to configure Gunicorn for optimal performance in production. Key settings include:
-	•	Worker Processes: The number of worker processes is calculated as cpu_count * 2 + 1.
-	•	Binding: The application is set to bind to 0.0.0.0:8000, making it accessible on port 8000.
-
-Dockerfile
-
-The Dockerfile is set up to:
-	1.	Use the python:3.11-slim base image.
-	2.	Install necessary dependencies (libpq-dev and gcc for PostgreSQL).
-	3.	Copy project files and install Python packages.
-	4.	Start the application using Gunicorn.
-
-Collaboration Guide
-
-Development Workflow
-
-	1.	Create a new branch for your work:
-
-git checkout -b feature-branch
-
-
-	2.	Make your changes, then stage and commit:
-
-git add .
-git commit -m "Your descriptive commit message"
-
-
-	3.	Push the branch and create a pull request:
-
-git push origin feature-branch
-
-
-	4.	Open a pull request on GitHub and request a review.
-
-Keeping Your Branch Updated
-
-	1.	Pull the latest changes from main:
-
-git checkout main
-git pull origin main
-
-
-	2.	Rebase your feature branch:
-
-git checkout feature-branch
-git rebase main
-
-
-	3.	Resolve conflicts if necessary, then push your updated branch.
-
-License
-
-This project is licensed under the MIT License. See the LICENSE file for details.
-
-This README should cover all necessary steps for setting up, running, and collaborating on the project, including both Docker and Gunicorn configurations. Let me know if there’s anything specific you’d like added!
+This project is licensed under the MIT License.
