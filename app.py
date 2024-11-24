@@ -56,6 +56,10 @@ else:
         f"{os.getenv('DB_HOST')}:{os.getenv('DB_PORT')}/{os.getenv('DB_NAME')}"
     )
 
+    # Set other production environment configurations
+    app.config['ENV'] = os.getenv('ENV')
+    app.config['FLASK_ENV'] = os.getenv('FLASK_ENV')
+
 # Common configurations
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
